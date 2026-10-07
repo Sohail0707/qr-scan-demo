@@ -1,0 +1,15 @@
+# Short QR codes -> product scan pages.
+# 302 (temporary), never 301: browsers cache 301s, which would lock in the old destination.
+# Both cases are listed so a code works whether it is scanned or typed in lowercase.
+# Rules run top to bottom; the first match wins.
+
+/q/TA    /scan/test-a?src=qr    302
+/q/ta    /scan/test-a?src=qr    302
+/q/TB    /scan/test-b?src=qr    302
+/q/tb    /scan/test-b?src=qr    302
+
+# Any unknown or mistyped code goes to the hub, never an error page.
+/q/*     /?missing=1            302
+
+# Clean scan URLs: /scan/test-a is served by one template (a rewrite, so the address stays clean).
+/scan/*  /scan.html             200

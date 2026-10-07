@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QR Scan Page Demo</title>
+  <meta name="description" content="A working demo of permanent QR redirects, private location sharing and indoor location fallback on Netlify.">
+  <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <span class="brand">QR Scan Demo</span>
+      <span class="tag">Netlify</span>
+    </header>
+
+    <div class="notice" id="missing" hidden>
+      That code wasn't recognised, so you were sent here instead of an error page. Try a code below.
+    </div>
+
+    <h1>QR codes that never need reprinting, and location that never leaves the phone.</h1>
+    <p class="muted">Scan a code below with your phone. Each part of this page shows the mechanism behind it.</p>
+
+    <section class="panel accent">
+      <h2>1. Scan a code</h2>
+      <p class="small muted">Each QR holds only a short address on this domain, for example <span class="mono">/q/TA</span>. A 302 redirect sends it to the scan page.</p>
+      <div class="qr-grid" id="qr-grid"></div>
+      <p class="small muted spaced">Also try <a href="/q/ta">/q/ta</a> (lowercase) and <a href="/q/ZZ">/q/ZZ</a> (unknown code).</p>
+    </section>
+
+    <section class="panel">
+      <h2>How the redirect works</h2>
+      <p>The printed code never points at a video or a page. It points at <span class="mono">/q/TA</span>, and one line in Netlify's <span class="mono">_redirects</span> file decides where that goes today:</p>
+<pre>/q/TA    /scan/test-a?src=qr    302
+/q/ta    /scan/test-a?src=qr    302
+/q/*     /?missing=1            302
+/scan/*  /scan.html             200</pre>
+      <h3>Why 302 and not 301</h3>
+      <p>A 301 means "moved forever", and browsers remember it. If you later change the destination, phones that scanned before keep going to the old one. A 302 is checked fresh every time, so the destination can change for years without reprinting.</p>
+      <h3>Why the last two lines</h3>
+      <p><span class="mono">/q/*</span> catches any unknown code and sends it to the hub instead of a 404. <span class="mono">/scan/*</span> is a rewrite (status 200): every product uses one template, and the address stays clean.</p>
+      <h3>The QR itself</h3>
+      <p>Error correction Q lets about a quarter of the code be damaged and still scan. A short address keeps the grid small, so it scans reliably even when printed around 2 cm. The card above shows the grid size for this demo's address; a short custom domain like druglab118.com/q/DD fits version 3 (29 by 29 modules). It needs a 4-module white margin. Downloads are vector SVG, so printers can scale them without blur.</p>
+    </section>
+
+    <section class="panel">
+      <h2>This page's own network activity</h2>
+      <p class="small muted">Everything this page has loaded, read live from the browser. Nothing is ever sent.</p>
+      <ul class="netlog" id="netlog"></ul>
+    </section>
+
+    <footer>
+      Demo built by Sohail Rana. Plain HTML, CSS and JavaScript on Netlify, no framework, no tracking.
+    </footer>
+  </div>
+
+  <script src="/assets/qrcode.js"></script>
+  <script src="/assets/common.js"></script>
+  <script src="/assets/home.js"></script>
+</body>
+</html>

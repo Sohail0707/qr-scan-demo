@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, follow">
+  <title>Scan | QR Scan Demo</title>
+  <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <a class="brand" href="/">QR Scan Demo</a>
+      <label>
+        <span class="sr-only" data-t="language">Language</span>
+        <select id="lang"></select>
+      </label>
+    </header>
+
+    <section class="panel accent">
+      <div class="tag" data-t="youScanned">You scanned</div>
+      <h1 id="product">…</h1>
+      <p class="muted small"><span data-t="testCode">Test code</span> <strong id="code"></strong> · <span id="source"></span></p>
+    </section>
+
+    <div class="notice" id="inapp" hidden>
+      <strong data-t="inAppTitle">You're in another app's browser.</strong>
+      <p class="small" data-t="inAppText">Location is often blocked here. Open this page in your phone's browser.</p>
+      <div class="btns">
+        <a class="btn primary" id="open-browser" href="#" hidden data-t="openChrome">Open in Chrome</a>
+        <button type="button" id="copy-page" data-t="copyPage">Copy page link</button>
+      </div>
+      <p class="small muted" id="ios-hint" hidden data-t="iosHint">On iPhone, tap the ••• or share icon, then "Open in Safari".</p>
+    </div>
+
+    <section class="panel">
+      <h2 data-t="shareTitle">Share my location</h2>
+      <p data-t="shareIntro">Send where you are to someone you trust. It goes straight from your phone to your messaging app.</p>
+      <div class="btns">
+        <button type="button" class="primary" data-share="whatsapp">WhatsApp</button>
+        <button type="button" data-share="sms" data-t="sms">Text message</button>
+        <button type="button" data-share="copy" data-t="copy">Copy link</button>
+      </div>
+      <p class="status" id="status" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="panel">
+      <h2>What just happened</h2>
+      <dl class="kv" id="debug">
+        <dt>Language</dt><dd id="d-lang">–</dd>
+        <dt>Picked from</dt><dd id="d-lang-src">–</dd>
+        <dt>Browser</dt><dd id="d-browser">–</dd>
+        <dt>Location method</dt><dd id="d-method">not used yet</dd>
+        <dt>Accuracy</dt><dd id="d-acc">–</dd>
+      </dl>
+      <h3>Location strategy</h3>
+      <p class="small">First it asks for GPS (high accuracy) for up to 8 seconds. Indoors, in a basement bar for example, GPS often can't get a fix. Instead of failing, it then asks for network location (Wi-Fi and cell towers), which is less precise but works inside. It shows the accuracy, so the person knows whether to add a landmark to the message.</p>
+      <h3>Privacy proof</h3>
+      <p class="small">The coordinates only exist in this browser tab. They are turned into a map link and handed to WhatsApp or SMS, where the person sees the message before sending it. The security header <span class="mono">connect-src 'self'</span> blocks this page from sending data to any other server, and the list below is the browser's own record of every request. Tap "Copy link" and watch it: nothing new appears.</p>
+      <ul class="netlog" id="netlog"></ul>
+    </section>
+
+    <footer><a href="/">← All codes</a> · Demo by Sohail Rana</footer>
+  </div>
+
+  <script src="/assets/common.js"></script>
+  <script src="/assets/scan.js"></script>
+</body>
+</html>
