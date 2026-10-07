@@ -22,6 +22,7 @@
       rough: 'Found you, but only to about {m} m. Add a landmark to your message.',
       message: 'I need help. This is where I am: {map}',
       copied: 'Link copied', copyFailed: 'Could not copy. Here is the link: {text}',
+      waMissing: 'If WhatsApp did not open, it may not be installed. Use "Copy link" and paste it into any chat.',
       denied: 'Location is blocked for this page. iPhone: Settings > Privacy & Security > Location Services > your browser > While Using. Android: tap the icon left of the address > Permissions > Location > Allow.',
       deniedEarly: 'Location is currently blocked for this page. You can still use the buttons; your phone will explain how to allow it.',
       unavailable: 'We could not find your location. Move near a window or outside and try again.',
@@ -43,6 +44,7 @@
       rough: 'Gevonden, maar alleen tot ongeveer {m} m. Noem een herkenningspunt in je bericht.',
       message: 'Ik heb hulp nodig. Hier ben ik: {map}',
       copied: 'Link gekopieerd', copyFailed: 'Kopiëren mislukt. Dit is de link: {text}',
+      waMissing: 'Als WhatsApp niet openging, is het misschien niet geïnstalleerd. Tik op "Link kopiëren" en plak de link in een chat.',
       denied: 'Locatie is geblokkeerd voor deze pagina. iPhone: Instellingen > Privacy en beveiliging > Locatievoorzieningen > je browser > Bij gebruik. Android: tik op het icoon links van het adres > Rechten > Locatie > Toestaan.',
       deniedEarly: 'Locatie is nu geblokkeerd voor deze pagina. Je kunt de knoppen toch gebruiken; je telefoon legt uit hoe je het toestaat.',
       unavailable: 'We konden je locatie niet vinden. Ga bij een raam of naar buiten en probeer opnieuw.',
@@ -166,7 +168,17 @@
 
   function deliver(channel, text) {
     if (channel === 'whatsapp') {
-      location.href = `https://wa.me/?text=${encodeURIComponent(text)}`;
+      const q = encodeURIComponent(text);
+      if (isIOS || isAndroid) {
+        // Open the app directly. wa.me bounces through api.whatsapp.com, and when that page
+        // hands off to the app (especially from in-app browsers) the text is dropped, so
+        // WhatsApp lands on the chat list with no share sheet.
+        location.href = `whatsapp://send?text=${q}`;
+        // If the app never took over (not installed), say so instead of failing silently.
+        setTimeout(() => { if (document.visibilityState === 'visible') status(t('waMissing'), 'warn'); }, 2500);
+      } else {
+        location.href = `https://wa.me/?text=${q}`;
+      }
     } else if (channel === 'sms') {
       // iOS reads the body after "&", Android after "?".
       location.href = `sms:${isIOS ? '&' : '?'}body=${encodeURIComponent(text)}`;
